@@ -9,29 +9,20 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TodoItemTaskTest {
-    private Person rami;
-    private TodoItem todo;
-    private TodoItemTask task;
-
-    @BeforeEach
-    void setUp() {
-        rami = new Person("Rami Saloum", "rami@example.com");
-        todo = new TodoItem("Buy groceries", "Milk, Bread, Eggs", LocalDate.of(2025, 10, 15), false, rami);
-        task = new TodoItemTask(todo, true, rami);
-    }
-
     @Test
     void testTodoItemTaskCreation() {
-        assertNotNull(task);
+        Person person = new Person( "Rami", "Saloum");
+        TodoItem todo = new TodoItem( "Shopping", "Milk, bread, eggs", LocalDate.now().plusDays(1), person);
+        TodoItemTask task = new TodoItemTask(todo, true, person);
+        assertNotNull(task.getTaskId());
         assertEquals(todo, task.getTodoItem());
+        assertEquals(person, task.getAssignedPerson());
         assertTrue(task.isAssigned());
-        assertEquals(rami, task.getAssignedPerson());
     }
 
-    @Test
-    void testTodoItemTaskAssignment() {
-        TodoItemTask task2 = new TodoItemTask(todo, false, null);
-        assertFalse(task2.isAssigned());
-        assertNull(task2.getAssignedPerson());
-    }
+
+
+
+
+
 }

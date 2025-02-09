@@ -1,9 +1,12 @@
 package se.lex.model;
 
+import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TodoItemTask {
-    private final UUID taskId; // Auto-generated UUID
+    private static final AtomicInteger count = new AtomicInteger(0);
+    private final int taskId; // Use UUID for unique ID
     private TodoItem todoItem;
     private boolean isAssigned;
     private Person assignedPerson;
@@ -11,18 +14,14 @@ public class TodoItemTask {
     public TodoItemTask(TodoItem todoItem, boolean isAssigned, Person assignedPerson) {
         if (todoItem == null)
             throw new IllegalArgumentException("TodoItem cannot be null");
-        this.taskId = UUID.randomUUID();
+
+        this.taskId = count.incrementAndGet();
         this.todoItem = todoItem;
         this.isAssigned = isAssigned;
         this.assignedPerson = assignedPerson;
-
-        // If assigned, add this task to the assigned person's todo items
-        if (isAssigned && assignedPerson != null) {
-            assignedPerson.addTodoItem(todoItem);
-        }
     }
 
-    public UUID getTaskId() {
+    public int getTaskId() {
         return taskId;
     }
 
@@ -31,6 +30,8 @@ public class TodoItemTask {
     }
 
     public void setTodoItem(TodoItem todoItem) {
+        if (todoItem == null)
+            throw new IllegalArgumentException("TodoItem cannot be null");
         this.todoItem = todoItem;
     }
 
@@ -48,6 +49,19 @@ public class TodoItemTask {
 
     public void setAssignedPerson(Person assignedPerson) {
         this.assignedPerson = assignedPerson;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TodoItemTask that = (TodoItemTask) o;
+        return Objects.equals(taskId, that.taskId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(taskId);
     }
 
     @Override
