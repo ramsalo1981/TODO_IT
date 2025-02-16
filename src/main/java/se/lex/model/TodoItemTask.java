@@ -5,24 +5,32 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TodoItemTask {
-    private static final AtomicInteger count = new AtomicInteger(0);
-    private final int taskId; // Use UUID for unique ID
+    private int id;
+    private boolean assigned;
     private TodoItem todoItem;
-    private boolean isAssigned;
-    private Person assignedPerson;
+    private Person assignee;
 
-    public TodoItemTask(TodoItem todoItem, boolean isAssigned, Person assignedPerson) {
-        if (todoItem == null)
-            throw new IllegalArgumentException("TodoItem cannot be null");
-
-        this.taskId = count.incrementAndGet();
-        this.todoItem = todoItem;
-        this.isAssigned = isAssigned;
-        this.assignedPerson = assignedPerson;
+    public TodoItemTask(int id, TodoItem todoItem, Person assignee) {
+        Objects.requireNonNull(todoItem,"TodoItem cannot be null.");
+        this.id = id;
+        setTodoItem(todoItem);
+        setAssignee(assignee);
     }
 
-    public int getTaskId() {
-        return taskId;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public boolean isAssigned() {
+        return assigned;
+    }
+
+    private void setAssigned(boolean assigned) {
+        this.assigned = assigned;
     }
 
     public TodoItem getTodoItem() {
@@ -30,25 +38,28 @@ public class TodoItemTask {
     }
 
     public void setTodoItem(TodoItem todoItem) {
-        if (todoItem == null)
-            throw new IllegalArgumentException("TodoItem cannot be null");
+        if (todoItem == null) {
+            throw new IllegalArgumentException("TodoItem cannot be null.");
+        }
         this.todoItem = todoItem;
     }
 
-    public boolean isAssigned() {
-        return isAssigned;
+    public Person getAssignee() {
+        return assignee;
     }
 
-    public void setAssigned(boolean assigned) {
-        isAssigned = assigned;
+    public void setAssignee(Person assignee) {
+        this.assignee = assignee;
+        setAssigned(assignee != null);
     }
 
-    public Person getAssignedPerson() {
-        return assignedPerson;
-    }
-
-    public void setAssignedPerson(Person assignedPerson) {
-        this.assignedPerson = assignedPerson;
+    @Override
+    public String toString() {
+        return "TodoItemTask{" +
+                "id=" + id +
+                ", assigned=" + assigned +
+                ", todoItem=" + todoItem +
+                '}';
     }
 
     @Override
@@ -56,21 +67,13 @@ public class TodoItemTask {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TodoItemTask that = (TodoItemTask) o;
-        return Objects.equals(taskId, that.taskId);
+        return id == that.id &&
+                assigned == that.assigned &&
+                Objects.equals(todoItem, that.todoItem);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(taskId);
-    }
-
-    @Override
-    public String toString() {
-        return "TodoItemTask{" +
-                "taskId=" + taskId +
-                ", todoItem=" + todoItem +
-                ", isAssigned=" + isAssigned +
-                ", assignedPerson=" + assignedPerson +
-                '}';
+        return Objects.hash(id, assigned, todoItem);
     }
 }

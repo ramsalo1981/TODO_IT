@@ -5,31 +5,31 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TodoItem {
-    private static final AtomicInteger count = new AtomicInteger(0); // Thread-safe ID generation
-    private final int todoItemId;
+    private int id;
     private String title;
     private String description;
-    private LocalDate deadline;
-    private boolean isDone;
-    private Person assignee;
+    private LocalDate deadLine;
+    private boolean done;
+    private Person creator;
 
-    public TodoItem( String title, String description, LocalDate deadline, Person assignee) {
-        if (title == null || title.trim().isEmpty())
-            throw new IllegalArgumentException("Title cannot be null or empty");
-        if (deadline.isBefore(LocalDate.now()))
-            throw new IllegalArgumentException("Deadline cannot be in the past");
-        if (assignee == null)
-            throw new IllegalArgumentException("Assignee cannot be null");
-
-        this.todoItemId = count.incrementAndGet();
-        this.title = title;
-        this.description = description;
-        this.deadline = deadline;
-        this.assignee = assignee;
+    public TodoItem(int id, String title, String description, LocalDate deadLine, boolean done, Person creator) {
+        Objects.requireNonNull(title,"Title cannot be null.");
+        Objects.requireNonNull(deadLine,"DeadLine cannot be null.");
+        Objects.requireNonNull(creator,"Creator cannot be null.");
+        this.id = id;
+        setTitle(title);
+        setDescription(description);
+        setDeadLine(deadLine);
+        this.done = done;
+        setCreator(creator);
     }
 
-    public int getTodoItemId() {
-        return todoItemId;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -37,8 +37,9 @@ public class TodoItem {
     }
 
     public void setTitle(String title) {
-        if (title == null || title.trim().isEmpty())
-            throw new IllegalArgumentException("Title cannot be null or empty");
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Title cannot be null or empty.");
+        }
         this.title = title;
     }
 
@@ -50,30 +51,49 @@ public class TodoItem {
         this.description = description;
     }
 
-    public LocalDate getDeadline() {
-        return deadline;
+    public LocalDate getDeadLine() {
+        return deadLine;
     }
 
-    public void setDeadline(LocalDate deadline) {
-        if (deadline.isBefore(LocalDate.now()))
-            throw new IllegalArgumentException("Deadline cannot be in the past");
-        this.deadline = deadline;
+    public void setDeadLine(LocalDate deadLine) {
+        if (deadLine == null) {
+            throw new IllegalArgumentException("Deadline cannot be null.");
+        }
+        this.deadLine = deadLine;
     }
 
     public boolean isDone() {
-        return isDone;
+        return done;
     }
 
     public void setDone(boolean done) {
-        isDone = done;
+        this.done = done;
     }
 
-    public Person getAssignee() {
-        return assignee;
+    public Person getCreator() {
+        return creator;
     }
 
-    public void setAssignee(Person assignee) {
-        this.assignee = assignee;
+    public void setCreator(Person creator) {
+        if (creator == null) {
+            throw new IllegalArgumentException("Creator cannot be null.");
+        }
+        this.creator = creator;
+    }
+
+    public boolean isOverdue() {
+        return LocalDate.now().isAfter(deadLine);
+    }
+
+    @Override
+    public String toString() {
+        return "TodoItem{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", deadLine=" + deadLine +
+                ", done=" + done +
+                '}';
     }
 
     @Override
@@ -81,23 +101,17 @@ public class TodoItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TodoItem todoItem = (TodoItem) o;
-        return todoItemId == todoItem.todoItemId &&
+        return id == todoItem.id &&
+                done == todoItem.done &&
                 Objects.equals(title, todoItem.title) &&
-                Objects.equals(deadline, todoItem.deadline);
+                Objects.equals(description, todoItem.description) &&
+                Objects.equals(deadLine, todoItem.deadLine);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(todoItemId, title, deadline);
+        return Objects.hash(id, title, description, deadLine, done);
     }
 
-    @Override
-    public String toString() {
-        return "TodoItem{" +
-                "todoItemId=" + todoItemId +
-                ", title='" + title + '\'' +
-                ", deadline=" + deadline +
-                ", assignee=" + assignee.getFirstName() + " " + assignee.getLastName() +
-                '}';
-    }
+
 }
